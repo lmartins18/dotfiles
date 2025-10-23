@@ -36,7 +36,7 @@ vim.schedule(function()
   require "mappings"
 end)
 
-vim.cmd.colorscheme('horizon')
+vim.cmd.colorscheme('tokyodark')
 
 -- This is your opts table
 require("telescope").setup {
