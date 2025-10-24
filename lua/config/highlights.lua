@@ -78,7 +78,7 @@ local overrides = {
   --------------------------------------------------------------------------
   DiagnosticError            = { fg = P.negative },
   DiagnosticWarn             = { fg = P.rosebud },
-  DiagnosticInfo             = { fg = P.lavender },
+  DiagnosticInfo             = { fg = P.cranberry },
   DiagnosticHint             = { fg = P.turquoise },
 
   DiagnosticUnderlineError   = { undercurl = true, sp = P.negative },
@@ -104,7 +104,7 @@ local overrides = {
   --------------------------------------------------------------------------
   -- DASHBOARD / ALPHA
   --------------------------------------------------------------------------
-  AlphaHeader   = { fg = P.cranberry },
+  AlphaHeader   = { fg = P.tag_fg, bold = true },
   AlphaButtons  = { fg = P.tag_fg },
   AlphaFooter   = { fg = P.accentAlt, italic = true },
   AlphaShortcut = { fg = P.rosebud },
