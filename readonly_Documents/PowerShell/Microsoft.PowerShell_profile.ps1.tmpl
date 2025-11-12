@@ -1,0 +1,95 @@
+{{- if eq .chezmoi.os "windows" -}}
+Invoke-Expression (&starship init powershell)
+Import-Module Terminal-Icons
+function Switch-DarkTheme {
+    $registryPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+    $propertyName = "AppsUseLightTheme"
+    if (!(Test-Path $registryPath)) { return }
+    $currentValue = (Get-ItemProperty -Path $registryPath -Name $propertyName -ErrorAction SilentlyContinue).$propertyName
+    if ($null -ne $currentValue) {
+        $newValue = if ($currentValue -eq 1) { 0 } else { 1 }
+        Set-ItemProperty -Path $registryPath -Name $propertyName -Value $newValue
+    }
+}
+Set-Alias ToggleTheme Switch-DarkTheme
+Set-Alias ex explorer
+
+{{- else if eq .chezmoi.os "darwin" -}}
+Invoke-Expression (&/opt/homebrew/bin/starship init powershell)
+Import-Module -Name Terminal-Icons
+$(/opt/homebrew/bin/brew shellenv) | Invoke-Expression
+$env:PATH = "$HOME/.local/bin:" + $env:PATH
+Set-Alias cura cursor-agent
+
+{{- end -}}
+
+
+
+Set-Alias nf neofetch
+function proc  {
+ (Get-Process | Sort-Object CPU -Descending)[0..9] |
+    Select-Object Id, ProcessName,
+        @{Name='CPU(s)';Expression={"{0:N1}" -f $_.CPU}},
+        @{Name='Memory(MB)';Expression={"{0:N1}" -f ($_.WorkingSet/1MB)}},
+        @{Name='Disk IO(MB)';Expression={"{0:N1}" -f (($_.IOReadBytes + $_.IOWriteBytes)/1MB)}}
+}
+Set-Alias prc proc
+
+function procm  {
+  (Get-Process | Sort-Object WorkingSet -Descending)[0..9] |
+ Select-Object Id, ProcessName,
+     @{Name='Memory(MB)';Expression={"{0:N1}" -f ($_.WorkingSet / 1MB)}},
+     @{Name='CPU(s)';Expression={"{0:N1}" -f $_.CPU}}
+}
+Set-Alias prm procm
+
+
+function Dharma {
+    $fourNobleTruths = @(
+        "`n=== The Four Noble Truths ===",
+        "1. Life involves suffering (dukkha).",
+        "2. Suffering is caused by craving and attachment.",
+        "3. There is a way to end suffering.",
+        "4. The way is the Noble Eightfold Path."
+    )
+    $fourNobleTruths | ForEach-Object { Write-Host $_ -ForegroundColor Cyan }
+
+    $eightfoldPath = @(
+        "`n=== The Noble Eightfold Path ===",
+        "1. Right View (Understanding):  Understand how life works (like the Four Noble Truths)",
+        "2. Right Intention (Thought): Choose kindness and clarity over selfishness",
+        "3. Right Speech: Speak honestly and gently",
+        "4. Right Action: Do no harm (physically or emotionally)",
+        "5. Right Livelihood: Work in a way that aligns with your values",
+        "6. Right Effort: Cultivate positive mental habits, let go of destructive ones",
+        "7. Right Mindfulness: Be aware of what you're doing and feeling in the moment",
+        "8. Right Concentration: Train your mind through meditation"
+    )
+    $eightfoldPath | ForEach-Object { Write-Host $_ -ForegroundColor Green }
+
+    $sevenVirtues = @(
+        "`n=== The Seven Virtues ===",
+        "1. Prudence: Think before you act and make wise decisions.",
+        "2. Justice: Treat others fairly and give everyone their due.",
+        "3. Temperance: Practice self-control and moderation in all things.",
+        "4. Courage: Do what is right even when it is difficult or frightening.",
+        "5. Faith: Trust in higher principles, purpose, or truth.",
+        "6. Hope: Believe in the possibility of good, even in hard times.",
+        "7. Charity: Show compassion, generosity, and love toward others."
+    )
+
+    $sevenVirtues | ForEach-Object { Write-Host $_ -ForegroundColor Yellow }
+
+    $sevenSins = @(
+        "`n=== The Seven Deadly Sins ===",
+        "1. Pride: An inflated sense of self-importance and superiority.",
+        "2. Envy: Resentment toward others for their success or possessions.",
+        "3. Wrath: Uncontrolled anger or hatred toward others.",
+        "4. Sloth: Laziness or failure to act and use one's talents.",
+        "5. Greed: Excessive desire for wealth or material gain.",
+        "6. Gluttony: Overindulgence and lack of self-restraint, especially with food or pleasure.",
+        "7. Lust: Intense or disordered desire for physical or sensual gratification.`n"
+    )
+
+    $sevenSins | ForEach-Object { Write-Host $_ -ForegroundColor Red }
+}
