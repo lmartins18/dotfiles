@@ -1,6 +1,4 @@
-# Windows
 {{- if eq .chezmoi.os "windows" -}}
-
 Invoke-Expression (&starship init powershell)
 Import-Module Terminal-Icons
 function Switch-DarkTheme {
@@ -16,9 +14,7 @@ function Switch-DarkTheme {
 Set-Alias ToggleTheme Switch-DarkTheme
 Set-Alias ex explorer
 
-# MacOS
 {{- else if eq .chezmoi.os "darwin" -}}
-
 Invoke-Expression (&/opt/homebrew/bin/starship init powershell)
 Import-Module -Name Terminal-Icons
 $(/opt/homebrew/bin/brew shellenv) | Invoke-Expression
