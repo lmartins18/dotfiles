@@ -1,25 +1,3 @@
-tt.*
-.tests
-doc/tags
-debug
-.repro
-foo.*
+.DS_Store
+Thumbs.db
 *.log
-data
-/nvim.bak
-.mono/
-"Microsoft\\VisualStudio Services/
-NuGet/
-com.corsair/
-configstore/
-csharp.history
-fish/
-homebank/
-nvim.bak3/
-planetscale/
-qBittorrent/
-spicetify/
-stetic/
-wireshark/
-xbuild/
-yarn/
