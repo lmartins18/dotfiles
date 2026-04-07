@@ -56,6 +56,7 @@ if (Get-Command brew -ErrorAction SilentlyContinue) {
 }
 {{- end -}}
 
+Set-Alias cz chezmoi
 Set-Alias nf neofetch
 function proc {
     (Get-Process | Sort-Object CPU -Descending)[0..9] |
@@ -122,4 +123,15 @@ function Dharma {
     )
 
     $sevenSins | ForEach-Object { Write-Host $_ -ForegroundColor Red }
+
+    $matthewSeven = @(
+        "Matthew 7:7-8",
+        "Ask and it will be given to you; seek and you will find;",
+        "knock and the door will be opened to you.",
+        "For everyone who asks receives;",
+        "the one who seeks finds;",
+        "and to the one who knocks, the door will be opened."
+    )
+
+    $matthewSeven | ForEach-Object { Write-Host $_ -ForegroundColor White }
 }
