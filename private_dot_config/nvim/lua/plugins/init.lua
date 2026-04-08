@@ -262,102 +262,68 @@ return {
       })
     end,
   },
-{
-  "folke/tokyonight.nvim",
-  lazy = false,
-  priority = 1000,
-  opts = {
-    -- optional: pick a base style you like
-    style = "night",
-    transparent = false,
+  {
+    "folke/tokyonight.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {
+      -- optional: pick a base style you like
+      style = "night",
+      transparent = false,
 
-    -- 1) optionally remap Tokyonight base palette to Horizon palette
-    --    (only if you ALSO want TN's core colors changed)
-    -- on_colors = function(c)
-    --   local H = require("config.highlights_palette")  -- if you have a palette module
-    --   -- Example mappings (tweak as you like):
-    --   c.bg = "#1C1E26"
-    --   c.bg_dark = "#1C1E26"
-    --   c.bg_float = "#232530"
-    --   c.fg = "#BBBBBB"
-    --   c.border = "#232530"
-    --   c.comment = "#4C4D53"
-    --   c.magenta = "#EE64AC"
-    --   c.red = "#E95678"
-    --   c.orange = "#FAB795"
-    --   c.yellow = "#FAB795"
-    --   c.green = "#29D398"
-    --   c.blue = "#26BBD9"
-    --   c.cyan = "#59E1E3"
-    -- end,
+      -- 1) optionally remap Tokyonight base palette to Horizon palette
+      --    (only if you ALSO want TN's core colors changed)
+      -- on_colors = function(c)
+      --   local H = require("config.highlights_palette")  -- if you have a palette module
+      --   -- Example mappings (tweak as you like):
+      --   c.bg = "#1C1E26"
+      --   c.bg_dark = "#1C1E26"
+      --   c.bg_float = "#232530"
+      --   c.fg = "#BBBBBB"
+      --   c.border = "#232530"
+      --   c.comment = "#4C4D53"
+      --   c.magenta = "#EE64AC"
+      --   c.red = "#E95678"
+      --   c.orange = "#FAB795"
+      --   c.yellow = "#FAB795"
+      --   c.green = "#29D398"
+      --   c.blue = "#26BBD9"
+      --   c.cyan = "#59E1E3"
+      -- end,
 
-    -- 2) apply your Horizon highlight groups
-    on_highlights = function(hl, c)
-      -- load your horizon highlight table
-      -- works whether your module returns { AlphaHeader = {...} }
-      -- or { overrides = { AlphaHeader = {...} } }
-      local mod = require("config.highlights")
-      local horizon = mod.overrides or mod
+      -- 2) apply your Horizon highlight groups
+      on_highlights = function(hl, c)
+        -- load your horizon highlight table
+        -- works whether your module returns { AlphaHeader = {...} }
+        -- or { overrides = { AlphaHeader = {...} } }
+        local mod = require("config.highlights")
+        local horizon = mod.overrides or mod
 
-      -- normalize and apply:
-      for group, spec in pairs(horizon) do
-        if type(spec) == "string" then
-          -- treat "Group" string as a link
-          hl[group] = { link = spec }
-        else
-          -- copy the table as-is (fg/bg/bold/italic/undercurl/etc.)
-          hl[group] = vim.tbl_extend("force", {}, spec)
+        -- normalize and apply:
+        for group, spec in pairs(horizon) do
+          if type(spec) == "string" then
+            -- treat "Group" string as a link
+            hl[group] = { link = spec }
+          else
+            -- copy the table as-is (fg/bg/bold/italic/undercurl/etc.)
+            hl[group] = vim.tbl_extend("force", {}, spec)
+          end
         end
-      end
+      end,
+    },
+    config = function(_, opts)
+      require("tokyonight").setup(opts)
+      vim.cmd.colorscheme("tokyonight")
     end,
   },
-  config = function(_, opts)
-    require("tokyonight").setup(opts)
-    vim.cmd.colorscheme("tokyonight")
-  end,
+  {
+    "Kurren123/mssql.nvim",
+    opts = {
+      -- optional
+      keymap_prefix = "<leader>m",
+    },
+    -- optional
+    dependencies = { "folke/which-key.nvim" },
+  },
 }
 
-  -- {
-  --   "lunarvim/horizon.nvim",
-  --   priority = 1000,
-  --   opts = {
-  --     overrides = {
-  --       colors = {
-  --         AlphaButtons = {
-  --   fg = "#007197", bg = "#1a1c23"
-  -- },
-  -- AlphaFooter = {
-  --   fg = "#188092", bg = "#1a1c23"
-  -- },
-  -- AlphaHeader = {
-  --   fg = "#2e7de9", bg = "#1a1c23"
-  -- },
-  -- AlphaHeaderLabel = {
-  --   fg = "#b15c00", bg = "#1a1c23"
-  -- },
-  -- AlphaShortcut = {
-  --   fg = "#b15c00", bg = "#1a1c23"
-  -- },
-  --       }
-  --     },
-  --     plugins = {
-  --       cmp = true,
-  --       indent_blankline = true,
-  --       nvim_tree = true,
-  --       telescope = true,
-  --       which_key = true,
-  --       barbar = true,
-  --       notify = true,
-  --       symbols_outline = true,
-  --       neo_tree = true,
-  --       gitsigns = true,
-  --       crates = true,
-  --       hop = true,
-  --       navic = true,
-  --       quickscope = true,
-  --       flash = true,
-  --     },
-  --   },
-  -- }
-
-}

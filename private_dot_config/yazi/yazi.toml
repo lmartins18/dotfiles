@@ -1,0 +1,5 @@
+# Yazi — managed by chezmoi. Docs: https://yazi-rs.github.io/docs/configuration/yazi
+[manager]
+show_hidden = false
+sort_by = "alphabetical"
+sort_dir_first = true

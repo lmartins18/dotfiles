@@ -1,0 +1,3 @@
+# https://www.chezmoi.io/reference/configuration/
+[edit]
+command = "nvim"

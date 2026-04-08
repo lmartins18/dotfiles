@@ -1,0 +1,14 @@
+# Keep repo docs out of $HOME (this file is in the chezmoi source root only)
+README.md
+
+# PowerShell profile: Windows uses ~/Documents/PowerShell; Unix uses ~/.config/powershell
+{{ if eq .chezmoi.os "windows" -}}
+.config/powershell/Microsoft.PowerShell_profile.ps1
+{{ else -}}
+Documents/PowerShell/Microsoft.PowerShell_profile.ps1
+{{ end -}}
+
+# Neofetch is rarely used on Windows; skip install noise (remove this block if you use it there)
+{{ if eq .chezmoi.os "windows" -}}
+.config/neofetch/**
+{{ end -}}
