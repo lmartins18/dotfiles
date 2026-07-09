@@ -59,6 +59,11 @@ if (Get-Command brew -ErrorAction SilentlyContinue) {
 }
 {{- end -}}
 
+# zoxide: smarter cd; learns visited dirs and powers `z`/`zi` (and Yazi's `z`).
+if (Get-Command zoxide -ErrorAction SilentlyContinue) {
+    Invoke-Expression (& { (zoxide init powershell | Out-String) })
+}
+
 Set-Alias cz chezmoi
 Set-Alias nf neofetch
 function proc {
