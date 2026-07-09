@@ -7,6 +7,9 @@ local wezterm = require 'wezterm'
 local act = wezterm.action
 local config = wezterm.config_builder()
 
+-- Quake-style toggle terminal (in-window dropdown pane)
+local toggle_terminal = wezterm.plugin.require 'https://github.com/zsh-sage/toggle_terminal.wez'
+
 local home = os.getenv 'USERPROFILE'
 local localappdata = os.getenv 'LOCALAPPDATA'
 
@@ -55,6 +58,7 @@ config.font = wezterm.font_with_fallback {
   { family = 'FantasqueSansM Nerd Font Mono', weight = 'Medium' },
   'FantasqueSansM Nerd Font',
   'Symbols Nerd Font Mono',
+  'Fira Code',
 }
 config.font_size = 12.0
 
@@ -165,5 +169,19 @@ for i = 1, 8 do
   table.insert(config.keys, { key = tostring(i), mods = 'CTRL|ALT', action = act.ActivateTab(i - 1) })
 end
 table.insert(config.keys, { key = '9', mods = 'CTRL|ALT', action = act.ActivateTab(-1) })
+
+-- Ctrl+`  ->  quake-style dropdown terminal (drops from the top, 40% height)
+toggle_terminal.apply_to_config(config, {
+  key = '`',
+  mods = 'CTRL',
+  direction = 'Up',
+  size = { Percent = 40 },
+  change_invoker_id_everytime = false,
+  zoom = {
+    auto_zoom_toggle_terminal = false,
+    auto_zoom_invoker_pane = true,
+    remember_zoomed = true,
+  },
+})
 
 return config
