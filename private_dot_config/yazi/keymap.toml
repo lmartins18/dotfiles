@@ -1,0 +1,26 @@
+# Yazi keymap (managed by chezmoi). prepend_keymap runs before Yazi's defaults,
+# so these win on conflicts while every built-in binding stays available.
+
+[mgr]
+prepend_keymap = [
+  # Quick directory jumps (g then key)
+  { on = [ "g", "h" ], run = "cd ~",                   desc = "Go home" },
+  { on = [ "g", "c" ], run = "cd ~/.config",           desc = "Go to ~/.config" },
+  { on = [ "g", "d" ], run = "cd C:/Dev",              desc = "Go to C:\\Dev" },
+  { on = [ "g", "D" ], run = "cd ~/Downloads",         desc = "Go to Downloads" },
+  { on = [ "g", "p" ], run = "cd C:/Dev/fpp-platform", desc = "Go to fpp-platform" },
+
+  # Toggles / conveniences
+  { on = ".",          run = "hidden toggle",              desc = "Toggle hidden files" },
+  { on = [ "c", "d" ], run = "cd --interactive",           desc = "Jump to a directory" },
+  { on = "<C-n>",      run = "shell 'explorer .' --orphan", desc = "Open Explorer here" },
+
+  # Yank paths
+  { on = [ "y", "p" ], run = "copy path",     desc = "Copy full path" },
+  { on = [ "y", "n" ], run = "copy filename", desc = "Copy filename" },
+]
+
+[input]
+prepend_keymap = [
+  { on = "<Esc>", run = "close", desc = "Cancel input" },
+]

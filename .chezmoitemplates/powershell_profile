@@ -24,6 +24,9 @@ function Switch-DarkTheme {
 }
 Set-Alias ToggleTheme Switch-DarkTheme
 Set-Alias ex explorer
+# Yazi: use Git for Windows' file.exe for MIME detection (needed for previews).
+$gitFileOne = Join-Path $env:LOCALAPPDATA 'Programs\Git\usr\bin\file.exe'
+if (Test-Path $gitFileOne) { $env:YAZI_FILE_ONE = $gitFileOne }
 {{- else if eq .chezmoi.os "darwin" -}}
 if (-not $env:XDG_CONFIG_HOME) {
     $env:XDG_CONFIG_HOME = Join-Path $env:HOME '.config'
@@ -74,6 +77,17 @@ function procm {
         @{Name = 'CPU(s)'; Expression = { "{0:N1}" -f $_.CPU } }
 }
 Set-Alias prm procm
+
+# `y` opens Yazi and cd's the shell to wherever you were browsing on quit (q).
+function y {
+    $tmp = [System.IO.Path]::GetTempFileName()
+    yazi $args --cwd-file="$tmp"
+    $cwd = Get-Content -Path $tmp -Encoding UTF8
+    if (-not [String]::IsNullOrEmpty($cwd) -and $cwd -ne $PWD.Path) {
+        Set-Location -LiteralPath ([System.IO.Path]::GetFullPath($cwd))
+    }
+    Remove-Item -Path $tmp
+}
 
 function Dharma {
     $fourNobleTruths = @(

@@ -1,0 +1,38 @@
+[user]
+    name = "YOUR NAME"
+    email = "you@example.com"
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = false
+
+[rebase]
+    autoStash = true
+
+[fetch]
+    prune = true
+
+[core]
+{{- if eq .chezmoi.os "windows" }}
+    autocrlf = true
+{{- else }}
+    autocrlf = input
+{{- end }}
+
+[credential]
+{{- if eq .chezmoi.os "windows" }}
+    helper = manager-core
+{{- else if eq .chezmoi.os "darwin" }}
+    helper = osxkeychain
+{{- else }}
+    helper = store
+{{- end }}
+
+[alias]
+    st = status -sb
+    co = checkout
+    br = branch
+    cm = commit
+    lg = log --oneline --graph --decorate --all
