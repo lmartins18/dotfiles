@@ -154,3 +154,83 @@ function Dharma {
 
     $matthewSeven | ForEach-Object { Write-Host $_ -ForegroundColor White }
 }
+
+# Make Claude Code use the native PowerShell tool (was a mistyped Set-Vet-variable
+# stuck inside Dharma; set here at top level as the env var it was meant to be).
+$env:CLAUDE_CODE_USE_POWERSHELL_TOOL = '1'
+
+# Stay-Awake: nudges the cursor + sends a no-op key every 30s so the machine
+# won't sleep/lock, with a small wave animation. Windows-only (WinForms +
+# WScript.Shell); defining it on other OSes is harmless (only errors if called).
+function Stay-Awake {
+    param(
+        [Parameter(Position = 0)]
+        [int]$Minutes = 0
+    )
+    Add-Type -AssemblyName System.Windows.Forms
+    $shell     = New-Object -ComObject WScript.Shell
+    $end       = if ($Minutes -gt 0) { (Get-Date).AddMinutes($Minutes) } else { $null }
+    $startTime = Get-Date
+    $lastKA    = [DateTime]::MinValue
+    $animW     = 52
+    $animH     = 4   # wave rows
+    $dot       = [char]0x00B7   # ·
+
+    Write-Host "Stay-Awake started$(if ($Minutes -gt 0){ " for $Minutes minute(s)" } else { " indefinitely" }). Press Ctrl+C to stop." -ForegroundColor Cyan
+
+    for ($i = 0; $i -le $animH; $i++) { Write-Host "" }
+    $animY = $host.UI.RawUI.CursorPosition.Y - $animH - 1
+    $t = 0.0
+
+    try {
+        while ($true) {
+            $now = Get-Date
+            if ($end -and $now -ge $end) { break }
+
+            if (($now - $lastKA).TotalSeconds -ge 30) {
+                $pos = [System.Windows.Forms.Cursor]::Position
+                [System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point(($pos.X + 1), $pos.Y)
+                Start-Sleep -Milliseconds 50
+                [System.Windows.Forms.Cursor]::Position = $pos
+                $shell.SendKeys('+')
+                $lastKA = $now
+            }
+
+            $t += 0.18
+            for ($row = 0; $row -lt $animH; $row++) {
+                $chars = [char[]](' ' * $animW)
+                for ($x = 0; $x -lt $animW; $x++) {
+                    $v = [Math]::Sin($x * 0.28 + $t - $row * 0.7)
+                    if ($v -gt 0.55) { $chars[$x] = '~' }
+                    elseif ($v -gt 0.15) { $chars[$x] = $dot }
+                }
+                $host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates 0, ($animY + $row)
+                Write-Host ([string]::new($chars)) -ForegroundColor Cyan -NoNewline
+            }
+
+            $elapsed = [int]($now - $startTime).TotalSeconds
+            $ts = '{0:D2}:{1:D2}:{2:D2}' -f ([int][Math]::Floor($elapsed / 3600)), ([int][Math]::Floor($elapsed % 3600 / 60)), ($elapsed % 60)
+            $status = if ($Minutes -gt 0) {
+                $rem = [Math]::Max(0, [int][Math]::Ceiling(($end - $now).TotalSeconds))
+                " $dot awake  $ts  $([Math]::Ceiling($rem / 60))m left $dot "
+            }
+            else {
+                " $dot awake  $ts $dot "
+            }
+            $host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates 0, ($animY + $animH)
+            Write-Host $status.PadRight($animW) -ForegroundColor DarkCyan -NoNewline
+
+            Start-Sleep -Milliseconds 80
+        }
+    }
+    finally {
+        for ($row = 0; $row -le $animH; $row++) {
+            $host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates 0, ($animY + $row)
+            Write-Host (' ' * ($animW + 2)) -NoNewline
+        }
+        $host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates 0, $animY
+        Write-Host "Stay-Awake stopped." -ForegroundColor Yellow
+    }
+}
+Set-Alias awake Stay-Awake
+Set-Alias st Stay-Awake
