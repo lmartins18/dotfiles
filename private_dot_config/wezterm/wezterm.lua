@@ -87,13 +87,12 @@ config.warn_about_missing_glyphs = false
 --------------------------------------------------------------------------------
 -- Window / tabs — roomier padding
 --------------------------------------------------------------------------------
--- Frosted-glass translucency. On Windows, Acrylic keeps the effect even while
--- MAXIMIZED — unlike plain window_background_opacity, which Windows drops when
--- maximized. macOS gets an equivalent background blur.
+-- Translucency via plain opacity (proven to work on this build). NOTE: Windows
+-- drops window transparency while the window is MAXIMIZED — keep it un-maximized
+-- to see it. (win32_system_backdrop='Acrylic' was tried and removed: it rendered
+-- opaque on this WezTerm build.) macOS additionally blurs what's behind.
 config.window_background_opacity = 0.76
-if is_win then
-  config.win32_system_backdrop = 'Acrylic'
-elseif is_mac then
+if is_mac then
   config.macos_window_background_blur = 20
 end
 config.window_padding = { left = 14, right = 14, top = 10, bottom = 8 }
