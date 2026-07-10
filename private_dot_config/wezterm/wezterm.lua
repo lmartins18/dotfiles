@@ -9,9 +9,6 @@ local wezterm = require 'wezterm'
 local act = wezterm.action
 local config = wezterm.config_builder()
 
--- Quake-style toggle terminal (in-window dropdown pane; Ctrl+` — see bottom).
-local toggle_terminal = wezterm.plugin.require 'https://github.com/zsh-sage/toggle_terminal.wez'
-
 --------------------------------------------------------------------------------
 -- Platform detection
 --------------------------------------------------------------------------------
@@ -123,6 +120,21 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, cfg, hover, max_width)
 end)
 
 --------------------------------------------------------------------------------
+-- Quake terminal support  (Windows only, via PowerToys + quake-toggle.ps1)
+--------------------------------------------------------------------------------
+-- The external toggle spawns a dedicated pwsh window tagged with the pane
+-- user-var `quake=1`; here we force that window's OS title to a fixed marker so
+-- quake-toggle.ps1 can find it (UI Automation) and minimize/restore it. Inert
+-- on machines that never set the var (e.g. macOS).
+wezterm.on('format-window-title', function(tab, pane, tabs, panes, cfg)
+  local uv = pane.user_vars
+  if uv and uv.quake == '1' then
+    return 'WezTermQuake'
+  end
+  return (tab.tab_index + 1) .. ': ' .. tab.active_pane.title
+end)
+
+--------------------------------------------------------------------------------
 -- Yazi + previews (works without touching system env vars)
 --------------------------------------------------------------------------------
 if is_win then
@@ -213,21 +225,5 @@ for i = 1, 8 do
   table.insert(config.keys, { key = tostring(i), mods = 'CTRL|ALT', action = act.ActivateTab(i - 1) })
 end
 table.insert(config.keys, { key = '9', mods = 'CTRL|ALT', action = act.ActivateTab(-1) })
-
--- Ctrl+`  ->  quake-style dropdown terminal (drops from the top, 40% height).
--- Kept on Ctrl (not MOD) on both OSes: fires in-window, so no external tool and
--- nothing for SentinelOne to block.
-toggle_terminal.apply_to_config(config, {
-  key = '`',
-  mods = 'CTRL',
-  direction = 'Up',
-  size = { Percent = 40 },
-  change_invoker_id_everytime = false,
-  zoom = {
-    auto_zoom_toggle_terminal = false,
-    auto_zoom_invoker_pane = true,
-    remember_zoomed = true,
-  },
-})
 
 return config
