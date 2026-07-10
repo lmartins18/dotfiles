@@ -1,22 +1,38 @@
--- WezTerm config (managed by chezmoi)
--- Shell: pwsh 7. Colors: custom "Horizon (nvim)" scheme built from the exact
--- palette in ~/.config/nvim/lua/config/highlights.lua (tokyonight + Horizon
--- highlight overrides) — no stock WezTerm Horizon matched it.
+-- WezTerm config — cross-platform (Windows + macOS), managed by chezmoi.
+-- One file, no templating: OS differences are branched at runtime in Lua via
+-- wezterm.target_triple, so chezmoi syncs the exact same file to every machine.
+--
+-- Colors: custom "Horizon (nvim)" scheme built from the exact palette in
+-- ~/.config/nvim/lua/config/highlights.lua (tokyonight + Horizon overrides).
 
 local wezterm = require 'wezterm'
 local act = wezterm.action
 local config = wezterm.config_builder()
 
--- Quake-style toggle terminal (in-window dropdown pane)
+-- Quake-style toggle terminal (in-window dropdown pane; Ctrl+` — see bottom).
 local toggle_terminal = wezterm.plugin.require 'https://github.com/zsh-sage/toggle_terminal.wez'
 
-local home = os.getenv 'USERPROFILE'
-local localappdata = os.getenv 'LOCALAPPDATA'
+--------------------------------------------------------------------------------
+-- Platform detection
+--------------------------------------------------------------------------------
+local triple = wezterm.target_triple
+local is_win = triple:find 'windows' ~= nil
+local is_mac = triple:find 'darwin' ~= nil
+local home = wezterm.home_dir
+
+-- App-level shortcut modifier: Cmd (SUPER) on macOS, Ctrl on Windows. Gives
+-- native muscle memory on each OS while keeping one shared binding table.
+local MOD = is_mac and 'SUPER' or 'CTRL'
 
 --------------------------------------------------------------------------------
 -- Shell
 --------------------------------------------------------------------------------
-config.default_prog = { 'pwsh.exe', '-NoLogo' }
+if is_win then
+  config.default_prog = { 'pwsh.exe', '-NoLogo' }
+end
+-- On macOS WezTerm uses your login shell. To run pwsh there too:
+--   brew install powershell   then uncomment:
+-- if is_mac then config.default_prog = { 'pwsh', '-NoLogo' } end
 
 --------------------------------------------------------------------------------
 -- Horizon color scheme (from your nvim palette)
@@ -54,18 +70,35 @@ config.colors = {
 --------------------------------------------------------------------------------
 -- Font
 --------------------------------------------------------------------------------
+-- Install the primary font on each machine:
+--   Windows: already present.  macOS: brew install --cask font-fantasque-sans-mono-nerd-font
 config.font = wezterm.font_with_fallback {
   { family = 'FantasqueSansM Nerd Font Mono', weight = 'Medium' },
   'FantasqueSansM Nerd Font',
-  'Symbols Nerd Font Mono',
-  'Fira Code',
+  -- FantasqueSansM's patched set misses some Nerd Font v3 icons, so fall back to
+  -- the full-coverage JetBrainsMono NFM (exact family per `wezterm ls-fonts`).
+  -- 'Fira Code' was removed — it isn't installed, so it did nothing.
+  'JetBrainsMono Nerd Font Mono',
+  'Symbols Nerd Font Mono', -- WezTerm's bundled symbol backstop
 }
-config.font_size = 12.0
+config.font_size = is_mac and 14.0 or 12.0 -- macOS Retina renders smaller
+
+-- Control chars (e.g. U+001B ESC) and stray unassigned Private-Use codepoints
+-- can never map to a real glyph, so the missing-glyph warning is pure noise.
+config.warn_about_missing_glyphs = false
 
 --------------------------------------------------------------------------------
 -- Window / tabs — roomier padding
 --------------------------------------------------------------------------------
+-- Frosted-glass translucency. On Windows, Acrylic keeps the effect even while
+-- MAXIMIZED — unlike plain window_background_opacity, which Windows drops when
+-- maximized. macOS gets an equivalent background blur.
 config.window_background_opacity = 0.76
+if is_win then
+  config.win32_system_backdrop = 'Acrylic'
+elseif is_mac then
+  config.macos_window_background_blur = 20
+end
 config.window_padding = { left = 14, right = 14, top = 10, bottom = 8 }
 config.default_cursor_style = 'SteadyUnderline'
 config.scrollback_lines = 9001
@@ -92,38 +125,49 @@ end)
 --------------------------------------------------------------------------------
 -- Yazi + previews (works without touching system env vars)
 --------------------------------------------------------------------------------
-config.set_environment_variables = {
-  YAZI_FILE_ONE = localappdata .. '\\Programs\\Git\\usr\\bin\\file.exe',
-  YAZI_CONFIG_HOME = home .. '\\.config\\yazi',
-}
+if is_win then
+  local localappdata = os.getenv 'LOCALAPPDATA'
+  config.set_environment_variables = {
+    YAZI_FILE_ONE = localappdata .. '\\Programs\\Git\\usr\\bin\\file.exe',
+    YAZI_CONFIG_HOME = home .. '\\.config\\yazi',
+  }
+else
+  -- macOS/Linux: `file` is already on PATH, so YAZI_FILE_ONE isn't needed.
+  config.set_environment_variables = {
+    YAZI_CONFIG_HOME = home .. '/.config/yazi',
+  }
+end
 
 --------------------------------------------------------------------------------
--- Keybindings — translated from Windows Terminal
+-- Keybindings
 --------------------------------------------------------------------------------
--- WezTerm defaults stay enabled; these layer on top.
--- Reproduced WT binds: ctrl+c (copy/interrupt), ctrl+v (paste), ctrl+shift+f
--- (find), alt+shift+d (auto split + duplicate), shift+enter (esc+cr).
--- NOT translatable: ctrl+` quakeMode / ctrl+' globalSummon (no WezTerm equivalent).
+-- MOD = Cmd on macOS, Ctrl on Windows. WezTerm defaults stay enabled; these
+-- layer on top. Tab-cycling & the quake toggle stay on Ctrl on both OSes because
+-- macOS reserves Cmd+Tab (app switcher) and Cmd+` (window cycle).
+local yazi_cmd = is_win and 'yazi.exe' or 'yazi'
+
 config.keys = {
+  -- Copy-on-selection, else pass the key through (Ctrl+C interrupt / Cmd+C copy).
   {
     key = 'c',
-    mods = 'CTRL',
+    mods = MOD,
     action = wezterm.action_callback(function(win, pane)
       local sel = win:get_selection_text_for_pane(pane)
       if sel and sel ~= '' then
         win:perform_action(act.CopyTo 'ClipboardAndPrimarySelection', pane)
         win:perform_action(act.ClearSelection, pane)
       else
+        -- Always emit a real SIGINT regardless of which MOD triggered this.
         win:perform_action(act.SendKey { key = 'c', mods = 'CTRL' }, pane)
       end
     end),
   },
-  { key = 'v', mods = 'CTRL', action = act.PasteFrom 'Clipboard' },
-  { key = 'c', mods = 'CTRL|SHIFT', action = act.CopyTo 'Clipboard' },
-  { key = 'v', mods = 'CTRL|SHIFT', action = act.PasteFrom 'Clipboard' },
+  { key = 'v', mods = MOD, action = act.PasteFrom 'Clipboard' },
+  { key = 'c', mods = MOD .. '|SHIFT', action = act.CopyTo 'Clipboard' },
+  { key = 'v', mods = MOD .. '|SHIFT', action = act.PasteFrom 'Clipboard' },
 
   { key = 'Enter', mods = 'SHIFT', action = act.SendString '\x1b\r' },
-  { key = 'f', mods = 'CTRL|SHIFT', action = act.Search 'CurrentSelectionOrEmptyString' },
+  { key = 'f', mods = MOD .. '|SHIFT', action = act.Search 'CurrentSelectionOrEmptyString' },
 
   -- alt+shift+d: split along the longer axis (WT "auto" duplicate)
   {
@@ -139,9 +183,9 @@ config.keys = {
     end),
   },
 
-  { key = 't', mods = 'CTRL|SHIFT', action = act.SpawnTab 'CurrentPaneDomain' },
-  { key = 'w', mods = 'CTRL|SHIFT', action = act.CloseCurrentPane { confirm = false } },
-  { key = 'n', mods = 'CTRL|SHIFT', action = act.SpawnWindow },
+  { key = 't', mods = MOD .. '|SHIFT', action = act.SpawnTab 'CurrentPaneDomain' },
+  { key = 'w', mods = MOD .. '|SHIFT', action = act.CloseCurrentPane { confirm = false } },
+  { key = 'n', mods = MOD .. '|SHIFT', action = act.SpawnWindow },
   { key = 'Tab', mods = 'CTRL', action = act.ActivateTabRelative(1) },
   { key = 'Tab', mods = 'CTRL|SHIFT', action = act.ActivateTabRelative(-1) },
 
@@ -155,14 +199,14 @@ config.keys = {
   { key = 'UpArrow', mods = 'ALT|SHIFT', action = act.AdjustPaneSize { 'Up', 3 } },
   { key = 'DownArrow', mods = 'ALT|SHIFT', action = act.AdjustPaneSize { 'Down', 3 } },
 
-  { key = 'p', mods = 'CTRL|SHIFT', action = act.ActivateCommandPalette },
-  { key = '=', mods = 'CTRL', action = act.IncreaseFontSize },
-  { key = '-', mods = 'CTRL', action = act.DecreaseFontSize },
-  { key = '0', mods = 'CTRL', action = act.ResetFontSize },
+  { key = 'p', mods = MOD .. '|SHIFT', action = act.ActivateCommandPalette },
+  { key = '=', mods = MOD, action = act.IncreaseFontSize },
+  { key = '-', mods = MOD, action = act.DecreaseFontSize },
+  { key = '0', mods = MOD, action = act.ResetFontSize },
   { key = 'Enter', mods = 'ALT', action = act.ToggleFullScreen },
   { key = 'F11', mods = 'NONE', action = act.ToggleFullScreen },
 
-  { key = 'y', mods = 'CTRL|SHIFT', action = act.SpawnCommandInNewTab { args = { 'yazi.exe' } } },
+  { key = 'y', mods = MOD .. '|SHIFT', action = act.SpawnCommandInNewTab { args = { yazi_cmd } } },
 }
 
 for i = 1, 8 do
@@ -170,7 +214,9 @@ for i = 1, 8 do
 end
 table.insert(config.keys, { key = '9', mods = 'CTRL|ALT', action = act.ActivateTab(-1) })
 
--- Ctrl+`  ->  quake-style dropdown terminal (drops from the top, 40% height)
+-- Ctrl+`  ->  quake-style dropdown terminal (drops from the top, 40% height).
+-- Kept on Ctrl (not MOD) on both OSes: fires in-window, so no external tool and
+-- nothing for SentinelOne to block.
 toggle_terminal.apply_to_config(config, {
   key = '`',
   mods = 'CTRL',
