@@ -194,6 +194,16 @@ config.keys = {
     end),
   },
 
+  -- Explicit pane splits (predictable, unlike alt+shift+d's auto direction):
+  --   Ctrl+Shift++  -> vertical split   (panes side by side, new pane on the right)
+  --   Ctrl+Shift+-  -> horizontal split (stacked, new pane below)
+  -- Both the shifted char ('+'/'_') and base key ('='/'-') are bound so it fires
+  -- regardless of how WezTerm reports the keypress on your layout.
+  { key = '+', mods = 'CTRL|SHIFT', action = act.SplitHorizontal { domain = 'CurrentPaneDomain' } },
+  { key = '=', mods = 'CTRL|SHIFT', action = act.SplitHorizontal { domain = 'CurrentPaneDomain' } },
+  { key = '_', mods = 'CTRL|SHIFT', action = act.SplitVertical { domain = 'CurrentPaneDomain' } },
+  { key = '-', mods = 'CTRL|SHIFT', action = act.SplitVertical { domain = 'CurrentPaneDomain' } },
+
   { key = 't', mods = MOD .. '|SHIFT', action = act.SpawnTab 'CurrentPaneDomain' },
   { key = 'w', mods = MOD .. '|SHIFT', action = act.CloseCurrentPane { confirm = false } },
   { key = 'n', mods = MOD .. '|SHIFT', action = act.SpawnWindow },
