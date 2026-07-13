@@ -1,6 +1,6 @@
 [user]
-    name = "YOUR NAME"
-    email = "you@example.com"
+    name = "Luis Martins"
+    email = "lmartins@firstpointpower.com"
 
 [init]
     defaultBranch = main
@@ -23,7 +23,7 @@
 
 [credential]
 {{- if eq .chezmoi.os "windows" }}
-    helper = manager-core
+    helper = manager
 {{- else if eq .chezmoi.os "darwin" }}
     helper = osxkeychain
 {{- else }}
