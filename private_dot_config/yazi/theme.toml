@@ -1,10 +1,10 @@
 # Yazi theme (managed by chezmoi).
-# Yazi has no built-in Horizon flavor, so this uses the "ashen" flavor (a warm,
-# muted dark theme) for Yazi's own chrome. Install once with:
-#   ya pkg add ficd0/ashen:ashen   (canonical mirror of codeberg.org/ficd/ashen)
+# Yazi has no built-in Horizon flavor, so this uses the "neon" flavor for Yazi's
+# own chrome. Install once with:
+#   ya pkg add tomer-ben-david/neon   (github.com/tomer-ben-david/neon.yazi)
 # To swap later:  ya pkg add <owner>/<flavor>  then change the name below.
 # If the flavor isn't installed, Yazi falls back to its built-in theme.
 
 [flavor]
-dark  = "ashen"
-light = "ashen"
+dark  = "neon"
+light = "neon"
