@@ -1,7 +1,3 @@
 {{ if ne .chezmoi.os "windows" }}
-<<<<<<< HEAD
 .config/wezterm/quake-toggle.ps1
-=======
-.config/wezterm/quake-daemon.ps1
->>>>>>> dae1ffc00f968c4dd6324d49845f171742bbdab3
 {{ end }}
