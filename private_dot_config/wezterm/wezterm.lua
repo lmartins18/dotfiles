@@ -137,14 +137,19 @@ end)
 --------------------------------------------------------------------------------
 -- Quake terminal support  (Windows only, via PowerToys + quake-toggle.ps1)
 --------------------------------------------------------------------------------
--- The external toggle spawns a dedicated pwsh window tagged with the pane
--- user-var `quake=1`; here we force that window's OS title to a fixed marker so
--- quake-toggle.ps1 can find it (UI Automation) and minimize/restore it. Inert
--- on machines that never set the var (e.g. macOS).
+-- The quake daemon spawns a dedicated pwsh window tagged with the pane user-var
+-- `quake=1`; here we force that window's OS title to a fixed marker so the daemon
+-- can find it. The marker must stay stable even after the user switches tabs or
+-- splits inside the quake window, so we mark the window if ANY of its tabs' active
+-- panes carry quake=1 — not just the currently-focused pane (a reverting title
+-- used to make the daemon lose the window and spawn a new one). Inert on machines
+-- that never set the var (e.g. macOS).
 wezterm.on('format-window-title', function(tab, pane, tabs, panes, cfg)
-  local uv = pane.user_vars
-  if uv and uv.quake == '1' then
-    return 'WezTermQuake'
+  for _, t in ipairs(tabs) do
+    local ap = t.active_pane
+    if ap and ap.user_vars and ap.user_vars.quake == '1' then
+      return 'WezTermQuake'
+    end
   end
   return (tab.tab_index + 1) .. ': ' .. tab.active_pane.title
 end)
