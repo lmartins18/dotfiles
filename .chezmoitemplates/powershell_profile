@@ -31,15 +31,23 @@ if (Test-Path $gitFileOne) { $env:YAZI_FILE_ONE = $gitFileOne }
 if (-not $env:XDG_CONFIG_HOME) {
     $env:XDG_CONFIG_HOME = Join-Path $env:HOME '.config'
 }
+# GUI apps (e.g. WezTerm) launch pwsh with a minimal PATH that excludes Homebrew,
+# so `brew` isn't found via Get-Command. Locate it by absolute path (Apple
+# Silicon, then Intel) and load its shellenv FIRST — this puts /opt/homebrew/bin
+# on PATH so starship, zoxide, fastfetch, etc. below resolve.
+$brewBin = @('/opt/homebrew/bin/brew', '/usr/local/bin/brew') |
+    Where-Object { Test-Path $_ } | Select-Object -First 1
+if ($brewBin) {
+    (& $brewBin shellenv) | Invoke-Expression
+}
 $localBin = Join-Path $env:HOME '.local/bin'
 if (Test-Path $localBin) {
     $env:PATH = "$localBin${([IO.Path]::PathSeparator)}$env:PATH"
 }
-Invoke-Expression (&starship init powershell)
-if (Get-Module -ListAvailable -Name Terminal-Icons) { Import-Module Terminal-Icons }
-if (Get-Command brew -ErrorAction SilentlyContinue) {
-    $(brew shellenv) | Invoke-Expression
+if (Get-Command starship -ErrorAction SilentlyContinue) {
+    Invoke-Expression (&starship init powershell)
 }
+if (Get-Module -ListAvailable -Name Terminal-Icons) { Import-Module Terminal-Icons }
 if (Get-Command cursor-agent -ErrorAction SilentlyContinue) {
     Set-Alias cura cursor-agent
 }
@@ -65,7 +73,11 @@ if (Get-Command zoxide -ErrorAction SilentlyContinue) {
 }
 
 Set-Alias cz chezmoi
+{{- if eq .chezmoi.os "darwin" }}
+Set-Alias nf fastfetch
+{{- else }}
 Set-Alias nf neofetch
+{{- end }}
 function proc {
     (Get-Process | Sort-Object CPU -Descending)[0..9] |
         Select-Object Id, ProcessName,

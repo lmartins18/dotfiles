@@ -26,10 +26,23 @@ local MOD = is_mac and 'SUPER' or 'CTRL'
 --------------------------------------------------------------------------------
 if is_win then
   config.default_prog = { 'pwsh.exe', '-NoLogo' }
+elseif is_mac then
+  -- macOS GUI apps launch with a minimal PATH (/usr/bin:/bin:/usr/sbin:/sbin)
+  -- that excludes Homebrew, so bare 'pwsh' isn't found. Use the absolute path,
+  -- probing Apple-Silicon (/opt/homebrew) then Intel (/usr/local).
+  local function first_existing(paths)
+    for _, p in ipairs(paths) do
+      local f = io.open(p, 'r')
+      if f then f:close(); return p end
+    end
+    return nil
+  end
+  local pwsh = first_existing { '/opt/homebrew/bin/pwsh', '/usr/local/bin/pwsh' }
+  if pwsh then
+    config.default_prog = { pwsh, '-NoLogo' }
+  end
+  -- If pwsh isn't found, fall through to WezTerm's default login shell.
 end
--- On macOS WezTerm uses your login shell. To run pwsh there too:
---   brew install powershell   then uncomment:
--- if is_mac then config.default_prog = { 'pwsh', '-NoLogo' } end
 
 --------------------------------------------------------------------------------
 -- Horizon color scheme (from your nvim palette)
