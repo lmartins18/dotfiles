@@ -7,6 +7,6 @@ rev = "619fdc5"
 hash = "a2640557497f7bf5ccf0c5349fa9c615"
 
 [[flavor.deps]]
-use = "ficd0/ashen:ashen"
-rev = "2da901f"
-hash = "7a4d10deade92fd1d1d6274416ae67af"
+use = "tomer-ben-david/neon"
+rev = "50f2e60"
+hash = "85ec44f8318e2f20233c6a3470c5ac47"
