@@ -265,6 +265,12 @@ config.keys = {
   { key = 'y', mods = MOD .. '|SHIFT', action = act.SpawnCommandInNewTab { args = { yazi_cmd } } },
 }
 
+-- macOS text-field conventions, translated to their shell equivalents.
+-- Cmd+Backspace "delete whole line" -> Ctrl+U (kill line in zsh/bash/PSReadLine).
+if is_mac then
+  table.insert(config.keys, { key = 'Backspace', mods = 'SUPER', action = act.SendKey { key = 'u', mods = 'CTRL' } })
+end
+
 for i = 1, 8 do
   table.insert(config.keys, { key = tostring(i), mods = 'CTRL|ALT', action = act.ActivateTab(i - 1) })
 end
