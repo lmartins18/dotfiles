@@ -21,6 +21,11 @@ local home = wezterm.home_dir
 -- native muscle memory on each OS while keeping one shared binding table.
 local MOD = is_mac and 'SUPER' or 'CTRL'
 
+-- Pane navigate/resize modifier: plain Alt works on Windows, but on macOS
+-- Alt IS Option, and Option+Left/Right is the shell's word-by-word movement —
+-- so panes get Cmd+Option there to keep word-jumping usable.
+local PANE_MOD = is_mac and 'SUPER|ALT' or 'ALT'
+
 --------------------------------------------------------------------------------
 -- Shell
 --------------------------------------------------------------------------------
@@ -171,7 +176,17 @@ end
 -- MOD = Cmd on macOS, Ctrl on Windows. WezTerm defaults stay enabled; these
 -- layer on top. Tab-cycling & the quake toggle stay on Ctrl on both OSes because
 -- macOS reserves Cmd+Tab (app switcher) and Cmd+` (window cycle).
-local yazi_cmd = is_win and 'yazi.exe' or 'yazi'
+-- Spawned commands get the same minimal GUI PATH as default_prog (no Homebrew),
+-- so resolve yazi to an absolute path on macOS; bare name is fine elsewhere.
+local yazi_cmd = 'yazi'
+if is_win then
+  yazi_cmd = 'yazi.exe'
+elseif is_mac then
+  for _, p in ipairs { '/opt/homebrew/bin/yazi', '/usr/local/bin/yazi' } do
+    local f = io.open(p, 'r')
+    if f then f:close(); yazi_cmd = p; break end
+  end
+end
 
 config.keys = {
   -- Copy-on-selection, else pass the key through (Ctrl+C interrupt / Cmd+C copy).
@@ -225,15 +240,15 @@ config.keys = {
   { key = 'Tab', mods = 'CTRL', action = act.ActivateTabRelative(1) },
   { key = 'Tab', mods = 'CTRL|SHIFT', action = act.ActivateTabRelative(-1) },
 
-  { key = 'LeftArrow', mods = 'ALT', action = act.ActivatePaneDirection 'Left' },
-  { key = 'RightArrow', mods = 'ALT', action = act.ActivatePaneDirection 'Right' },
-  { key = 'UpArrow', mods = 'ALT', action = act.ActivatePaneDirection 'Up' },
-  { key = 'DownArrow', mods = 'ALT', action = act.ActivatePaneDirection 'Down' },
+  { key = 'LeftArrow', mods = PANE_MOD, action = act.ActivatePaneDirection 'Left' },
+  { key = 'RightArrow', mods = PANE_MOD, action = act.ActivatePaneDirection 'Right' },
+  { key = 'UpArrow', mods = PANE_MOD, action = act.ActivatePaneDirection 'Up' },
+  { key = 'DownArrow', mods = PANE_MOD, action = act.ActivatePaneDirection 'Down' },
 
-  { key = 'LeftArrow', mods = 'ALT|SHIFT', action = act.AdjustPaneSize { 'Left', 3 } },
-  { key = 'RightArrow', mods = 'ALT|SHIFT', action = act.AdjustPaneSize { 'Right', 3 } },
-  { key = 'UpArrow', mods = 'ALT|SHIFT', action = act.AdjustPaneSize { 'Up', 3 } },
-  { key = 'DownArrow', mods = 'ALT|SHIFT', action = act.AdjustPaneSize { 'Down', 3 } },
+  { key = 'LeftArrow', mods = PANE_MOD .. '|SHIFT', action = act.AdjustPaneSize { 'Left', 3 } },
+  { key = 'RightArrow', mods = PANE_MOD .. '|SHIFT', action = act.AdjustPaneSize { 'Right', 3 } },
+  { key = 'UpArrow', mods = PANE_MOD .. '|SHIFT', action = act.AdjustPaneSize { 'Up', 3 } },
+  { key = 'DownArrow', mods = PANE_MOD .. '|SHIFT', action = act.AdjustPaneSize { 'Down', 3 } },
 
   { key = 'p', mods = MOD .. '|SHIFT', action = act.ActivateCommandPalette },
   { key = '=', mods = MOD, action = act.IncreaseFontSize },
