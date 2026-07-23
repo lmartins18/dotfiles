@@ -267,8 +267,19 @@ config.keys = {
 
 -- macOS text-field conventions, translated to their shell equivalents.
 -- Cmd+Backspace "delete whole line" -> Ctrl+U (kill line in zsh/bash/PSReadLine).
+-- Word/line navigation: PSReadLine (Emacs mode) and zsh both understand
+-- ESC-b/ESC-f for word jumps and Home/End for line start/end; WezTerm sends
+-- neither for Option/Cmd+arrows by default, so translate explicitly.
 if is_mac then
   table.insert(config.keys, { key = 'Backspace', mods = 'SUPER', action = act.SendKey { key = 'u', mods = 'CTRL' } })
+  -- Option+Backspace "delete previous word" (ESC,Backspace = BackwardKillWord)
+  table.insert(config.keys, { key = 'Backspace', mods = 'ALT', action = act.SendString '\x1b\x7f' })
+  -- Option+arrows: word-by-word
+  table.insert(config.keys, { key = 'LeftArrow', mods = 'ALT', action = act.SendString '\x1bb' })
+  table.insert(config.keys, { key = 'RightArrow', mods = 'ALT', action = act.SendString '\x1bf' })
+  -- Cmd+arrows: line start/end
+  table.insert(config.keys, { key = 'LeftArrow', mods = 'SUPER', action = act.SendKey { key = 'Home' } })
+  table.insert(config.keys, { key = 'RightArrow', mods = 'SUPER', action = act.SendKey { key = 'End' } })
 end
 
 for i = 1, 8 do
