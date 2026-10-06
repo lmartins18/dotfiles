@@ -15,7 +15,7 @@ scrolloff      = 5
 linemode       = "size"
 
 [preview]
-wrap          = "no"
+wrap          = "yes"
 tab_size      = 2
 max_width     = 900
 max_height    = 1200
@@ -25,8 +25,8 @@ image_quality = 90
 
 [opener]
 edit = [
-  { run = 'code %*', orphan = true, desc = "VS Code", for = "windows" },
   { run = 'nvim %*', block = true, desc = "nvim", for = "windows" },
+  { run = 'code %*', orphan = true, desc = "VS Code", for = "windows" },
 ]
 open = [
   { run = 'start "" "%1"', orphan = true, desc = "Open (default app)", for = "windows" },
