@@ -5,7 +5,15 @@ return {
   --   opts = require "configs.conform",
   -- },
 
-  { "neovim/nvim-lspconfig" },
+  {
+    "neovim/nvim-lspconfig",
+    opts = {
+      servers = {
+        -- LazyVim's lang.dotnet extra enables omnisharp; roslyn replaces it.
+        omnisharp = { enabled = false },
+      },
+    },
+  },
   {
     "nvim-treesitter/nvim-treesitter",
     opts = {
@@ -42,7 +50,6 @@ return {
         "json-lsp",
         "rust-analyzer",
         "roslyn",
-        "rzls",
       },
     },
   },
@@ -52,38 +59,22 @@ return {
     ---@type RoslynNvimConfig
     ft = { "cs", "razor" },
     opts = {},
-
-    dependencies = {
-      {
-        "tris203/rzls.nvim",
-        config = true,
-      },
-    },
-    lazy = false,
-    config = function()
-      -- Use one of the methods in the Integration section to compose the command.
-      local mason_registry = require("mason-registry")
-
-      local rzls_path = vim.fn.expand("$MASON/packages/rzls/libexec")
-      local cmd = {
-        "roslyn",
-        "--stdio",
-        "--logLevel=Information",
-        "--extensionLogDirectory=" .. vim.fs.dirname(vim.lsp.get_log_path()),
-        "--razorSourceGenerator=" .. vim.fs.joinpath(rzls_path, "Microsoft.CodeAnalysis.Razor.Compiler.dll"),
-        "--razorDesignTimePath=" .. vim.fs.joinpath(rzls_path, "Targets", "Microsoft.NET.Sdk.Razor.DesignTime.targets"),
-        "--extension",
-        vim.fs.joinpath(rzls_path, "RazorExtension", "Microsoft.VisualStudioCode.RazorExtension.dll"),
-      }
-
+    config = function(_, opts)
+      require("roslyn").setup(opts)
+      -- Razor/Blazor is handled natively by roslyn.nvim + the Mason `roslyn`
+      -- server (>= 5.8). Do NOT add rzls / --razorSourceGenerator here: rzls is
+      -- discontinued, the flags make the server exit on startup.
       vim.lsp.config("roslyn", {
-        cmd = cmd,
-        handlers = require("rzls.roslyn_handlers"),
+        cmd = {
+          "roslyn",
+          "--stdio",
+          "--logLevel=Information",
+          "--extensionLogDirectory=" .. vim.fs.dirname(vim.lsp.get_log_path()),
+        },
         settings = {
           ["csharp|inlay_hints"] = {
             csharp_enable_inlay_hints_for_implicit_object_creation = true,
             csharp_enable_inlay_hints_for_implicit_variable_types = true,
-
             csharp_enable_inlay_hints_for_lambda_parameter_types = true,
             csharp_enable_inlay_hints_for_types = true,
             dotnet_enable_inlay_hints_for_indexer_parameters = true,
