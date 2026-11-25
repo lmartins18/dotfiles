@@ -1,3 +1,7 @@
+# Horizon colours (same palette as kitty.conf). Module styles keep their
+# usual colour names; the palette below maps those names to Horizon.
+palette = "horizon"
+
 [aws]
 format = '\[[$symbol($profile)(\($region\))(\[$duration\])]($style)\]'
 
@@ -192,3 +196,13 @@ format = '\[[$symbol($version)]($style)\]'
 
 [solidity]
 format = '\[[$symbol($version)]($style)\]'
+
+[palettes.horizon]
+red = "#e95678"
+green = "#29d398"
+yellow = "#fab795"
+blue = "#26bbd9"
+purple = "#b877db"
+cyan = "#59e1e3"
+white = "#d5d8da"
+black = "#16161c"

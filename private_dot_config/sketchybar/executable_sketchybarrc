@@ -1,0 +1,188 @@
+#!/bin/bash
+# Slim Horizon bar. Pill layout after github.com/wthrajat/dotfiles-mac:
+# SF Pro Light, thin SF Symbols, one accent colour (apricot), hairline edges.
+
+source "$CONFIG_DIR/colors.sh"
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+FONT="SF Pro"
+
+PILL=(
+  background.color=$PILL_BG
+  background.corner_radius=5
+  background.height=24
+  background.border_width=1
+  background.border_color=$PILL_BORDER
+  blur_radius=40
+)
+
+# The bar itself is invisible; only the pills show.
+sketchybar --bar height=32 \
+                 y_offset=4 \
+                 margin=0 \
+                 color=$TRANSPARENT \
+                 border_width=0 \
+                 blur_radius=0 \
+                 shadow=off \
+                 sticky=on \
+                 font_smoothing=on \
+                 padding_left=12 \
+                 padding_right=12
+
+sketchybar --default updates=when_shown \
+                     icon.font="$FONT:Light:13.0" \
+                     icon.color=$APRICOT \
+                     label.font="$FONT:Light:12.5" \
+                     label.color=$TEXT \
+                     background.color=$TRANSPARENT \
+                     y_offset=0
+
+# A 1px vertical rule, used between groups inside a pill.
+hairline() {
+  sketchybar --add item "$1" "$2" \
+             --set "$1" width=1 \
+                        icon.drawing=off \
+                        label.drawing=off \
+                        padding_left=6 \
+                        padding_right=6 \
+                        background.drawing=on \
+                        background.color=$HAIRLINE \
+                        background.height=12 \
+                        background.corner_radius=0
+}
+
+# ~~ left: apple + Spaces ~~
+
+sketchybar --add item apple left \
+           --set apple icon=􀣺 \
+                       icon.font="$FONT:Light:14.0" \
+                       icon.color=$TEXT \
+                       icon.padding_left=6 \
+                       icon.padding_right=0 \
+                       label.drawing=off \
+                       click_script="$PLUGIN_DIR/btop.sh"
+
+hairline apple_rule left
+
+# macOS Spaces (Mission Control numbers). Each screen's bar shows only its own
+# Spaces; ones that don't exist stay hidden. Clicking one brings forward an
+# app on that Space, which takes macOS there.
+for sid in $(seq 1 16); do
+  sketchybar --add space space.$sid left \
+             --set space.$sid space=$sid \
+                              icon=$sid \
+                              icon.font="$FONT:Light:12.5" \
+                              icon.color=$MUTED \
+                              icon.align=center \
+                              icon.width=22 \
+                              icon.padding_left=0 \
+                              icon.padding_right=0 \
+                              label.drawing=off \
+                              label.font="sketchybar-app-font:Regular:12.0" \
+                              label.color=$MUTED \
+                              label.padding_left=0 \
+                              label.padding_right=6 \
+                              label.y_offset=-1 \
+                              background.drawing=off \
+                              background.color=$APRICOT \
+                              background.height=1 \
+                              background.y_offset=-8 \
+                              background.corner_radius=0 \
+                              script="$PLUGIN_DIR/space.sh" \
+                              click_script="$PLUGIN_DIR/space_click.sh $sid"
+done
+
+# One hidden item keeps every Space's app icons current.
+sketchybar --add item space_windows left \
+           --set space_windows drawing=off \
+                               updates=on \
+                               script="$PLUGIN_DIR/space_windows.sh" \
+           --subscribe space_windows space_windows_change
+
+sketchybar --add bracket spaces apple apple_rule '/space\..*/' \
+           --set spaces "${PILL[@]}" \
+                        background.padding_left=8 \
+                        background.padding_right=8
+
+sketchybar --add item gap_spaces_music left \
+           --set gap_spaces_music width=10 icon.drawing=off label.drawing=off
+
+# ~~ left: Spotify ~~
+
+sketchybar --add event spotify_change com.spotify.client.PlaybackStateChanged \
+           --add item spotify left \
+           --set spotify drawing=off \
+                         updates=on \
+                         update_freq=30 \
+                         icon=􀑪 \
+                         icon.padding_left=10 \
+                         icon.padding_right=6 \
+                         label.max_chars=30 \
+                         label.padding_right=4 \
+                         label.scroll_duration=500 \
+                         scroll_texts=off \
+                         click_script="$PLUGIN_DIR/spotify.sh playpause" \
+                         script="$PLUGIN_DIR/spotify.sh" \
+           --subscribe spotify spotify_change system_woke
+
+hairline spotify.rule left
+sketchybar --set spotify.rule drawing=off
+
+for control in prev toggle next; do
+  case $control in
+    prev) icon=􀊍 action=prev ;;
+    toggle) icon=􀊃 action=playpause ;;
+    next) icon=􀊏 action=next ;;
+  esac
+  sketchybar --add item spotify.$control left \
+             --set spotify.$control drawing=off \
+                                    icon=$icon \
+                                    icon.font="$FONT:Light:11.0" \
+                                    icon.color=$TEXT \
+                                    icon.padding_left=6 \
+                                    icon.padding_right=6 \
+                                    label.drawing=off \
+                                    click_script="$PLUGIN_DIR/spotify.sh $action"
+done
+sketchybar --set spotify.next icon.padding_right=10
+
+sketchybar --add bracket music spotify spotify.rule spotify.prev spotify.toggle spotify.next \
+           --set music "${PILL[@]}"
+
+# ~~ right: added right to left ~~
+
+sketchybar --default "${PILL[@]}" \
+                     icon.padding_left=10 \
+                     icon.padding_right=4 \
+                     label.padding_left=4 \
+                     label.padding_right=10 \
+                     padding_left=4 \
+                     padding_right=4
+
+# Date in the dim colour, time in full, like a watch face.
+sketchybar --add item clock right \
+           --set clock icon.font="$FONT:Light:12.5" \
+                       icon.color=$MUTED \
+                       label.font="$FONT:Regular:12.5" \
+                       update_freq=10 \
+                       script="$PLUGIN_DIR/clock.sh" \
+           --subscribe clock system_woke
+
+sketchybar --add item battery right \
+           --set battery icon=􀛨 \
+                         label="--%" \
+                         update_freq=60 \
+                         script="$PLUGIN_DIR/battery.sh" \
+           --subscribe battery power_source_change system_woke
+
+sketchybar --add item cpu right \
+           --set cpu icon=􀫥 \
+                     update_freq=10 \
+                     script="$PLUGIN_DIR/cpu.sh"
+
+sketchybar --add item memory right \
+           --set memory icon=􀫦 \
+                        update_freq=10 \
+                        script="$PLUGIN_DIR/memory.sh"
+
+sketchybar --update
+sketchybar --hotload on

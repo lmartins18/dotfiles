@@ -3,4 +3,8 @@
 {{ end }}
 {{ if eq .chezmoi.os "windows" }}
 .hammerspoon
+.config/kitty
+.config/sketchybar
+.config/btop
+.config/borders
 {{ end }}
