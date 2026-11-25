@@ -9,6 +9,12 @@ local map = vim.keymap.set
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jk", "<ESC>")
 
+-- Option/Alt + wheel or PageUp/PageDown scrolls sideways (LazyVim sets nowrap)
+map({ "n", "v", "i" }, "<M-ScrollWheelUp>", "<ScrollWheelLeft>")
+map({ "n", "v", "i" }, "<M-ScrollWheelDown>", "<ScrollWheelRight>")
+map({ "n", "v" }, "<M-PageUp>", "zH")
+map({ "n", "v" }, "<M-PageDown>", "zL")
+
 -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")
 vim.keymap.set("n", "<leader>ca", function()
     vim.lsp.buf.code_action()

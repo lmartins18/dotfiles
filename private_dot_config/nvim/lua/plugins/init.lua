@@ -316,5 +316,30 @@ return {
     -- optional
     dependencies = { "folke/which-key.nvim" },
   },
+  {
+    "folke/snacks.nvim",
+    opts = {
+      picker = {
+        -- Option+PageUp/PageDown scroll the results sideways while typing in the
+        -- search box (the global ones in keymaps.lua only scroll the focused window)
+        actions = {
+          list_scroll_left = function(picker)
+            vim.api.nvim_win_call(picker.list.win.win, function() vim.cmd("normal! zH") end)
+          end,
+          list_scroll_right = function(picker)
+            vim.api.nvim_win_call(picker.list.win.win, function() vim.cmd("normal! zL") end)
+          end,
+        },
+        win = {
+          input = {
+            keys = {
+              ["<M-PageUp>"] = { "list_scroll_left", mode = { "i", "n" } },
+              ["<M-PageDown>"] = { "list_scroll_right", mode = { "i", "n" } },
+            },
+          },
+        },
+      },
+    },
+  },
 }
 
