@@ -79,6 +79,20 @@ if (Get-Command zoxide -ErrorAction SilentlyContinue) {
     Invoke-Expression (& { (zoxide init powershell | Out-String) })
 }
 
+# Suggestions from history plus plugins, as a list under the prompt (F2 switches
+# to grey inline text). CompletionPredictor adds what Tab completion would offer
+# (commands, parameters, paths); install it once per machine with
+# Install-PSResource CompletionPredictor -Scope CurrentUser
+if (Get-Module -ListAvailable -Name CompletionPredictor) { Import-Module CompletionPredictor }
+Set-PSReadLineOption -PredictionSource HistoryAndPlugin -PredictionViewStyle ListView
+Set-PSReadLineOption -HistoryNoDuplicates -MaximumHistoryCount 10000
+# Horizon: apricot list markers, selection-grey highlight, muted inline text.
+Set-PSReadLineOption -Colors @{
+    ListPrediction         = "`e[38;2;250;183;149m"
+    ListPredictionSelected = "`e[48;2;52;54;71m"
+    InlinePrediction       = "`e[38;2;108;111;147m"
+}
+
 Set-Alias cz chezmoi
 {{- if eq .chezmoi.os "darwin" }}
 Set-Alias nf fastfetch
