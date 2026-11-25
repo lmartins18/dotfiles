@@ -1,0 +1,114 @@
+# Horizon flavor for yazi, same palette as kitty.conf. Layout after the ashen flavor.
+
+[mgr]
+cwd = { fg = "#fab795", bold = true }
+
+hovered = { fg = "#1c1e26", bg = "#fab795" }
+preview_hovered = { underline = true }
+
+find_keyword = { fg = "#59e1e3", bold = true, italic = true, underline = true }
+find_position = { fg = "#59e1e3", bg = "reset", bold = true, italic = true }
+
+marker_copied = { fg = "#29d398", bg = "#29d398" }
+marker_cut = { fg = "#e95678", bg = "#e95678" }
+marker_marked = { fg = "#26bbd9", bg = "#26bbd9" }
+marker_selected = { fg = "#fab795", bg = "#fab795" }
+
+count_copied = { fg = "#1c1e26", bg = "#29d398" }
+count_cut = { fg = "#1c1e26", bg = "#e95678" }
+count_selected = { fg = "#1c1e26", bg = "#fab795" }
+
+border_symbol = "│"
+border_style = { fg = "#343647" }
+
+[indicator]
+padding = { open = "", close = "" }
+
+[tabs]
+active = { fg = "#1c1e26", bg = "#fab795", bold = true }
+inactive = { fg = "#d5d8da", bg = "#262833" }
+sep_inner = { open = "", close = "" }
+sep_outer = { open = "", close = "" }
+
+[mode]
+normal_main = { fg = "#1c1e26", bg = "#fab795", bold = true }
+normal_alt = { fg = "#fab795", bg = "#262833" }
+select_main = { fg = "#1c1e26", bg = "#e95678", bold = true }
+select_alt = { fg = "#e95678", bg = "#262833" }
+unset_main = { fg = "#1c1e26", bg = "#ee64ac", bold = true }
+unset_alt = { fg = "#ee64ac", bg = "#262833" }
+
+[status]
+sep_left = { open = "", close = "" }
+sep_right = { open = "", close = "" }
+progress_label = { fg = "#1c1e26", bold = true }
+progress_normal = { fg = "#fab795", bg = "#262833" }
+progress_error = { fg = "#e95678", bg = "#262833" }
+perm_sep = { fg = "#6c6f93" }
+perm_type = { fg = "#26bbd9" }
+perm_read = { fg = "#fab795" }
+perm_write = { fg = "#e95678" }
+perm_exec = { fg = "#29d398" }
+
+[pick]
+border = { fg = "#fab795" }
+active = { fg = "#e95678", bold = true }
+inactive = {}
+
+[input]
+border = { fg = "#fab795" }
+title = {}
+value = {}
+selected = { reversed = true }
+
+[cmp]
+border = { fg = "#fab795" }
+
+[tasks]
+border = { fg = "#fab795" }
+title = {}
+hovered = { fg = "#d5d8da", underline = true }
+
+[which]
+mask = { bg = "#16161c" }
+cand = { fg = "#fab795" }
+rest = { fg = "#6c6f93" }
+desc = { fg = "#e95678" }
+separator = "  "
+separator_style = { fg = "#343647" }
+
+[help]
+on = { fg = "#fab795" }
+run = { fg = "#e95678" }
+desc = { fg = "#d5d8da" }
+hovered = { reversed = true, bold = true }
+footer = { fg = "#d5d8da", bg = "#16161c" }
+
+[notify]
+title_info = { fg = "#29d398" }
+title_warn = { fg = "#fab795" }
+title_error = { fg = "#e95678" }
+
+[spot]
+border = { fg = "#fab795" }
+title = {}
+tbl_cell = { fg = "#fab795", reversed = true }
+tbl_col = {}
+
+[confirm]
+border = { fg = "#fab795" }
+title = {}
+list = {}
+btn_yes = { reversed = true }
+btn_no = {}
+btn_labels = [" [Y]es  ", "  (N)o  "]
+
+[filetype]
+rules = [
+  { mime = "image/*", fg = "#fab795" },
+  { mime = "{audio,video}/*", fg = "#ee64ac" },
+  { mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", fg = "#e95678" },
+  { mime = "application/{pdf,doc,rtf}", fg = "#59e1e3" },
+  { url = "*", fg = "#d5d8da" },
+  { url = "*/", fg = "#26bbd9" },
+]

@@ -1,3 +1,4 @@
 # Yazi theme (managed by chezmoi).
-dark  = "neon"
-light = "neon"
+[flavor]
+dark  = "horizon"
+light = "horizon"

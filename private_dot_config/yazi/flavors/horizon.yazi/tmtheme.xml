@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Horizon syntax colours for yazi's code preview. -->
+<plist version="1.0">
+<dict>
+  <key>name</key><string>Horizon</string>
+  <key>settings</key>
+  <array>
+    <dict><key>settings</key><dict>
+      <key>background</key><string>#1c1e26</string>
+      <key>foreground</key><string>#d5d8da</string>
+      <key>caret</key><string>#fab795</string>
+      <key>selection</key><string>#343647</string>
+      <key>lineHighlight</key><string>#232530</string>
+    </dict></dict>
+    <dict><key>scope</key><string>comment, punctuation.definition.comment</string>
+      <key>settings</key><dict><key>foreground</key><string>#6c6f93</string><key>fontStyle</key><string>italic</string></dict></dict>
+    <dict><key>scope</key><string>string, punctuation.definition.string</string>
+      <key>settings</key><dict><key>foreground</key><string>#fab795</string></dict></dict>
+    <dict><key>scope</key><string>constant.numeric, constant.language, constant.character</string>
+      <key>settings</key><dict><key>foreground</key><string>#f09483</string></dict></dict>
+    <dict><key>scope</key><string>keyword, storage, storage.type, keyword.operator.word</string>
+      <key>settings</key><dict><key>foreground</key><string>#b877db</string></dict></dict>
+    <dict><key>scope</key><string>entity.name.function, support.function, meta.function-call</string>
+      <key>settings</key><dict><key>foreground</key><string>#25b0bc</string></dict></dict>
+    <dict><key>scope</key><string>entity.name.type, entity.name.class, support.type, support.class</string>
+      <key>settings</key><dict><key>foreground</key><string>#fac29a</string></dict></dict>
+    <dict><key>scope</key><string>variable, variable.parameter</string>
+      <key>settings</key><dict><key>foreground</key><string>#e95678</string></dict></dict>
+    <dict><key>scope</key><string>entity.name.tag, entity.other.attribute-name</string>
+      <key>settings</key><dict><key>foreground</key><string>#e95678</string></dict></dict>
+    <dict><key>scope</key><string>keyword.operator, punctuation</string>
+      <key>settings</key><dict><key>foreground</key><string>#bbbbbb</string></dict></dict>
+    <dict><key>scope</key><string>markup.heading</string>
+      <key>settings</key><dict><key>foreground</key><string>#e95678</string><key>fontStyle</key><string>bold</string></dict></dict>
+    <dict><key>scope</key><string>markup.inserted</string>
+      <key>settings</key><dict><key>foreground</key><string>#29d398</string></dict></dict>
+    <dict><key>scope</key><string>markup.deleted, invalid</string>
+      <key>settings</key><dict><key>foreground</key><string>#e95678</string></dict></dict>
+  </array>
+</dict>
+</plist>

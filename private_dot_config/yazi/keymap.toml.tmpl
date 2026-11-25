@@ -6,14 +6,25 @@ prepend_keymap = [
   # Quick directory jumps (g then key)
   { on = [ "g", "h" ], run = "cd ~",                   desc = "Go home" },
   { on = [ "g", "c" ], run = "cd ~/.config",           desc = "Go to ~/.config" },
+{{- if eq .chezmoi.os "windows" }}
   { on = [ "g", "d" ], run = "cd C:/Dev",              desc = "Go to C:\\Dev" },
+{{- else }}
+  { on = [ "g", "d" ], run = "cd ~/Documents/Projects", desc = "Go to Projects" },
+{{- end }}
   { on = [ "g", "D" ], run = "cd ~/Downloads",         desc = "Go to Downloads" },
+{{- if eq .chezmoi.os "windows" }}
   { on = [ "g", "p" ], run = "cd C:/Dev/fpp-platform", desc = "Go to fpp-platform" },
+{{- end }}
 
   # Toggles / conveniences
   { on = ".",          run = "hidden toggle",              desc = "Toggle hidden files" },
   { on = [ "c", "d" ], run = "cd --interactive",           desc = "Jump to a directory" },
+{{- if eq .chezmoi.os "windows" }}
   { on = "<C-n>",      run = "shell 'explorer .' --orphan", desc = "Open Explorer here" },
+{{- else }}
+  { on = "<C-n>",      run = "shell 'open .' --orphan",     desc = "Open Finder here" },
+{{- end }}
+  { on = "<C-o>",      run = "open",                        desc = "Open selected files" },
 
   # Yank paths
   { on = [ "y", "p" ], run = "copy path",     desc = "Copy full path" },
