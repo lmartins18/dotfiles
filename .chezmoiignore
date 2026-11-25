@@ -6,5 +6,4 @@
 .config/kitty
 .config/sketchybar
 .config/btop
-.config/borders
 {{ end }}
